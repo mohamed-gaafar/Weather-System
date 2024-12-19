@@ -1,0 +1,147 @@
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Project_Server
+{
+    public partial class Server_Form : Form
+    {
+        private TcpListener listener;
+        private TcpClient client;
+        private NetworkStream stream;
+        private StreamReader reader;
+        private StreamWriter writer;
+
+        public Server_Form()
+        {
+            InitializeComponent();
+        }
+
+        private async void StartBtn_Click(object sender, EventArgs e)
+        {
+            listener = new TcpListener(IPAddress.Any, 9050); // Replace with your desired port
+            listener.Start();
+            client = await listener.AcceptTcpClientAsync();
+            IPEndPoint newClient = (IPEndPoint)client.Client.RemoteEndPoint;
+            Chat_Box.AppendText($"Connected with {newClient.Address} at port {newClient.Port}" + Environment.NewLine);
+
+            stream = client.GetStream();
+            reader = new StreamReader(stream);
+            writer = new StreamWriter(stream) { AutoFlush = true };
+
+            // Start a separate thread to receive messages
+            Thread receiveThread = new Thread(ReceiveMessages);
+            receiveThread.Start();
+        }
+
+        private async void ReceiveMessages()
+        {
+            try
+            {
+                while (true)
+                {
+                    string receivedMessage = await reader.ReadLineAsync();
+                    if (receivedMessage != null)
+                    {
+                        if (receivedMessage.StartsWith("FILE:"))
+                        {
+                            // Handle file transfer request
+                            string filePath = receivedMessage.Substring(5);
+                            CompressAndSendFile(filePath);
+                        }
+                        else if (receivedMessage.StartsWith("DIRECTORY:"))
+                        {
+                            string directoryPath = receivedMessage.Substring(10);
+                            if (Directory.Exists(directoryPath))
+                            {
+                                string[] files = Directory.GetFiles(directoryPath);
+                                string[] directories = Directory.GetDirectories(directoryPath);
+                                StringBuilder directoryContents = new StringBuilder();
+                                foreach (string file in files)
+                                {
+                                    directoryContents.AppendLine($"File: {Path.GetFileName(file)}");
+                                }
+                                foreach (string directory in directories)
+                                {
+                                    directoryContents.AppendLine($"Directory: {Path.GetFileName(directory)}");
+                                }
+                                await writer.WriteLineAsync(directoryContents.ToString());
+                            }
+                            else
+                            {
+                                await writer.WriteLineAsync($"Directory not found: {directoryPath}");
+                            }
+                        }
+                        else
+                        {
+                            // Display regular chat messages
+                            Invoke(new Action(() => Chat_Box.AppendText(receivedMessage + Environment.NewLine)));
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle disconnection or errors
+                MessageBox.Show($"Error receiving message: {ex.Message}");
+            }
+        }
+
+        private void CompressAndSendFile(string filePath)
+        {
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    // Read file content
+                    byte[] fileContent = File.ReadAllBytes(filePath);
+
+                    // Compress file content
+                    using (MemoryStream compressedStream = new MemoryStream())
+                    {
+                        using (GZipStream compressionStream = new GZipStream(compressedStream, CompressionMode.Compress))
+                        {
+                            compressionStream.Write(fileContent, 0, fileContent.Length);
+                        }
+
+                        // Send compressed content to client
+                        writer.WriteLine("COMPRESSED:");
+                        writer.WriteLine(Convert.ToBase64String(compressedStream.ToArray()));
+                    }
+                }
+                else
+                {
+                    writer.WriteLine($"File not found: {filePath}");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle errors
+                MessageBox.Show($"Error compressing and sending file: {ex.Message}");
+            }
+        }
+
+        private async void SendBtn_Click(object sender, EventArgs e)
+        {
+            string message = Message_Box.Text;
+            await writer.WriteLineAsync(message);
+            Message_Box.Clear();
+        }
+
+        private void CloseBtn_Click(object sender, EventArgs e)
+        {
+            writer.Close();
+            reader.Close();
+            stream.Close();
+            client.Close();
+            listener.Stop();
+            Chat_Box.AppendText("Disconnected from client" + Environment.NewLine);
+        }
+    }
+}

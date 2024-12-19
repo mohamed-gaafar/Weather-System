@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualization</title>
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link rel="stylesheet" href="hs.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+
+  <!-- Include the CanvasJS library -->
+  <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+  <style>
+    .chartContainer {
+      height: 150px;
+      width: 80%;
+	  width: calc(80% - 40px);
+      margin-bottom: 20px;
+	  border: 2px solid #ddd; /* Add this line for the border */
+        border-radius: 10px;
+    }
+
+    #legendContainer {
+      display: flex;
+      justify-content: space-between;
+      width: auto;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-right: 20px;
+      margin-left: 60px;
+    }
+
+    .legend-item div {
+      width: 5px;
+      height: 15px;
+    }
+	 #rainDropChartContainer {
+        background: url('IMG-20240207-WA0058.jpg') no-repeat center center fixed; 
+        background-size: cover;
+      }
+	  #humidityChartContainer {
+       background: url('IMG-20240207-WA0058.jpg') no-repeat center center fixed;   
+        background-size: cover;
+      }
+	        #temperatureChartContainer {
+         background: url('IMG-20240207-WA0058.jpg') no-repeat center center fixed; 
+        background-size: cover;
+      }
+
+  </style>
+</head>
+
+<body>
+  <div class="sidebar" style="position: fixed; top: 0;">
+    <div class="top">
+      <div class="logo">
+        <i class="bx bxl-codepen"></i>
+        <span>WRS</span>
+      </div>
+      <i class="bx bx-menu" id="btn"></i>
+    </div>
+    <div class="user">
+      <img src="cloud.jpg" alt="" class="user-img">
+      <div>
+        <p class="bold">Weather Monitoring</p>
+      </div>
+    </div>
+    <ul>
+      <li>
+        <a href="index.html">
+          <i class="bx bx-home bx-border"></i>
+          <span class="nav-item">Home</span>
+        </a>
+        <span class="tooltip">Home</span>
+      </li>
+      <li>
+        <a href="Chart.html">
+          <i class="bx bx-chart bx-border"></i>
+          <span class="nav-item">Visualization</span>
+        </a>
+        <span class="tooltip">Visualization</span>
+      </li>
+      <li>
+        <a href="Data.html">
+          <i class="bx bx-data bx-border"></i>
+          <span class="nav-item">Historical Data</span>
+        </a>
+        <span class="tooltip">Historical Data</span>
+      </li>
+      <li>
+        <a href="Forecast.html">
+          <i class="bx bxs-cloud-lightning bx-border"></i>
+          <span class="nav-item">Forecast</span>
+        </a>
+        <span class="tooltip">Forecast</span>
+      </li>
+      <li>
+        <a href="Teamwork.html">
+          <i class="bx bxs-group bx-border"></i>
+          <span class="nav-item">Teamwork</span>
+        </a>
+        <span class="tooltip">Teamwork</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div class="container" style="flex: 1;">
+      <p style="font-size: 25px;font-weight: bold;text-align: center;text-decoration: underline;text-transform: uppercase; ">weather
+        visualization</p>
+      <!-- Container for the Temperature chart -->
+      <div class="chartContainer" id="temperatureChartContainer" style="height:200px; width:auto;"></div>
+
+      <!-- Container for the Humidity chart -->
+      <div class="chartContainer" id="humidityChartContainer" style="height:200px; width:auto;"></div>
+
+      <!-- Container for the RainDrop chart -->
+      <div class="chartContainer" id="rainDropChartContainer" style="height:200px; width:auto;"></div>
+
+      <!-- Legend Container -->
+      <div id="legendContainer"></div>
+
+      <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { getDatabase, ref, child, onValue, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyBJ1ktYgQ5h-SHg0r5tvOfELQU8MnKcXps",
+          authDomain: "dhtdata-171c6.firebaseapp.com",
+          databaseURL: "https://dhtdata-171c6-default-rtdb.firebaseio.com",
+          projectId: "dhtdata-171c6",
+          storageBucket: "dhtdata-171c6.appspot.com",
+          messagingSenderId: "780334007542",
+          appId: "1:780334007542:web:80728b9350d9412e2058d7"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase();
+
+        // Arrays to store chart data
+        let temperatureChartDataArray = [];
+        let humidityChartDataArray = [];
+        let rainDropChartDataArray = [];
+		let precipitationChartDataArray = [];
+
+        // Container for the charts
+        var temperatureChartContainer = document.getElementById('temperatureChartContainer');
+        var humidityChartContainer = document.getElementById('humidityChartContainer');
+        var rainDropChartContainer = document.getElementById('rainDropChartContainer');
+
+       
+        // Functions to add data to the respective charts
+        function AddTemperatureData(date, temperature, timestamp) {
+          temperatureChartDataArray.push({
+            y: parseFloat(temperature),
+            toolTipContent: `Date: ${date}<br>Time: ${timestamp}<br>Temperature: {y}`
+          });
+          drawTemperatureChart();
+        }
+
+        function AddHumidityData(date, humidity, timestamp) {
+          humidityChartDataArray.push({
+            y: parseFloat(humidity),
+            toolTipContent: `Date: ${date}<br>Time: ${timestamp}<br>Humidity: {y}`
+          });
+          drawHumidityChart();
+        }
+
+        function AddRainDropData(date, rain, timestamp) {
+  const precipitation = 100 - (rain * 100) / 1024;
+  precipitationChartDataArray.push({
+    y: parseFloat(precipitation.toFixed(2)), // Converting to float and fixing decimal places
+    toolTipContent: `Date: ${date}<br>Time: ${timestamp}<br>RainDrop: ${rain}<br>Precipitation: {y}%` // Display % in the tooltip
+  });
+
+  drawRainDropChart(); // Draw the RainDrop chart with updated data
+}
+        // Functions to draw the respective charts
+  function drawTemperatureChart() {
+  var temperatureChart = new CanvasJS.Chart(temperatureChartContainer, {
+   animationEnabled: true,
+    animationDuration: 3000,
+    theme: "light2",
+    backgroundColor: "transparent",
+    axisY: {
+	  
+      lineThickness: 2,
+      tickThickness: 0,
+      title: "Temperature (°C) ",
+      minimum: 10,
+      interval: 5,
+      maximum: 40,
+	  margin: 20,
+      gridColor: "transparent",
+      labelFontColor: "black",
+      titleFontColor: "black"
+    },
+    axisX: {
+      lineThickness: 0,
+      tickThickness: 0,
+      labelFormatter: function (e) {
+        return "";
+      }
+    },
+    data: [{
+      type: "line",
+      lineColor: "red",
+      dataPoints: temperatureChartDataArray
+    }]
+  });
+
+  temperatureChart.render();
+}
+
+
+       function drawHumidityChart() {
+  var humidityChart = new CanvasJS.Chart(humidityChartContainer, {
+    animationEnabled: true,
+    animationDuration: 3000,
+    theme: "light2",
+    backgroundColor: "transparent",
+    axisY: {
+	margin: 15,
+      lineThickness: 2,
+      tickThickness: 0,
+      title: "Humidity (%)",
+      minimum: 40,
+      interval: 10,
+      maximum: 100,
+      gridColor: "transparent",
+      labelFontColor: "black",
+      titleFontColor: "black"
+    },
+    axisX: {
+      lineThickness: 0,
+      tickThickness: 0,
+      labelFormatter: function (e) {
+        return "";
+      }
+    },
+    data: [{
+      type: "line",
+      lineColor: "yellow",
+      dataPoints: humidityChartDataArray
+    }]
+  });
+
+  humidityChart.render();
+}
+
+
+
+        function drawRainDropChart() {
+  // Clear the existing chart container
+  //rainDropChartContainer.innerHTML = '';
+
+  // Create a new chart
+  var rainDropChart = new CanvasJS.Chart(rainDropChartContainer, {
+    animationEnabled: true,
+    animationDuration: 3000,
+    theme: "light2",
+    backgroundColor: "transparent",
+    axisY: {
+	margin:15,
+      lineThickness: 2,
+      tickThickness: 0,
+      title: "Precipitation (%)",
+      minimum: 0,
+      interval: 20,
+      maximum: 100,
+      gridColor: "transparent",
+      labelFontColor: "black",
+      titleFontColor: "black"
+    },
+    axisX: {
+      lineThickness: 0,
+      tickThickness: 0,
+      labelFormatter: function (e) {
+        return "";
+      }
+    },
+    data: [{
+      type: "line",
+      lineColor: "blue",
+      dataPoints: precipitationChartDataArray
+    }]
+  });
+
+  // Render the chart
+  rainDropChart.render();
+}
+        // Function to add data to all charts
+        function addToCharts(weatherrow) {
+          // Sort the weatherrow array based on the Date parameter
+          weatherrow.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+
+          weatherrow.forEach(element => {
+            AddTemperatureData(element.Date, element.Temperature, element.Time);
+            AddHumidityData(element.Date, element.Humidity, element.Time);
+            AddRainDropData(element.Date, element.RainDrop, element.Time);
+          });
+		  
+		  
+        }
+
+        // Function to fetch data from Firebase and add to charts
+        function getAll() {
+          const dbRef = ref(db, "Weather Data");
+          onValue(dbRef, (snapshot) => {
+            var wrows = [];
+            snapshot.forEach(childSnapshot => {
+              wrows.push(childSnapshot.val());
+            });
+
+            // Reset chart data arrays
+            temperatureChartDataArray = [];
+            humidityChartDataArray = [];
+            rainDropChartDataArray = [];
+
+            // Add new data to all charts
+            addToCharts(wrows);
+          });
+        }
+
+        // Mock data for the legend (you can replace it with your Firebase logic)
+        const legendData = [
+          { color: "red", label: "Temperature" },
+          { color: "yellow", label: "Humidity" },
+          { color: "blue", label: "RainDrop" }
+        ];
+
+        // Flag to check if the legend has been created
+        let legendCreated = false;
+
+        // Function to create legend without the chart
+        function createLegend() {
+          if (!legendCreated) {
+            const legendContainer = document.getElementById('legendContainer');
+
+            legendData.forEach(data => {
+              const legendItem = document.createElement('div');
+              legendItem.className = 'legend-item';
+
+              const colorSquare = document.createElement('div');
+              colorSquare.style.backgroundColor = data.color;
+              colorSquare.style.width = '15px';
+              colorSquare.style.height = '15px';
+              colorSquare.style.marginRight = '5px';
+
+              const label = document.createElement('span');
+              label.textContent = data.label;
+
+              legendItem.appendChild(colorSquare);
+              legendItem.appendChild(label);
+
+              legendContainer.appendChild(legendItem);
+            });
+
+            // Set the flag to true after creating the legend
+            legendCreated = true;
+          }
+        }
+
+        window.onload = function () {
+          getAll();
+          createLegend();
+        };
+      </script>
+    </div>
+  </div>
+</body>
+
+<script>
+  let btn = document.querySelector('#btn')
+  let sidebar = document.querySelector('.sidebar')
+
+  btn.onclick = function () {
+    //toggle(token: string,force?: boolean):boolean
+    sidebar.classList.toggle('active')
+  };
+</script>
+
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="hs.css">
+    <script src="https://cdn.jsdelivr.net/gh/scottjehl/picturefill@3.0.2/dist/picturefill.js" async></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" 
+    integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .main-content {
+            overflow-y: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar" style="position: fixed; top: 0;">
+        <div class="top">
+            <div class="logo">
+                <i class="bx bxl-codepen"></i>
+                <span>WRS</span>
+            </div>
+            <i class="bx bx-menu" id="btn"></i>
+        </div>
+        <div class="user">
+            <img src="cloud.jpg" alt="" class="user-img">
+            <div>
+                <p class="bold">Weather Monitoring</p>
+            </div>
+        </div>
+        <ul>
+            <li>
+                <a href="index.html">
+                    <i class="bx bx-home bx-border"></i>
+                    <span class="nav-item">Home</span>
+                </a>
+                <span class="tooltip">Home</span>
+            </li>
+            <li>
+                <a href="Chart.html">
+                    <i class="bx bx-chart bx-border"></i>
+                    <span class="nav-item">Visualization</span>
+                </a>
+                <span class="tooltip">Visualization</span>
+            </li>
+            <li>
+                <a href="Data.html">
+                    <i class="bx bx-data bx-border"></i>
+                    <span class="nav-item">Historical Data</span>
+                </a>
+                <span class="tooltip">Historical Data</span>
+            </li>
+            <li>
+                <a href="Forecast.html">
+                    <i class="bx bxs-cloud-lightning bx-border"></i>
+                    <span class="nav-item">Forecast</span>
+                </a>
+                <span class="tooltip">Forecast</span>
+            </li>
+            <li>
+                <a href="Teamwork.html">
+                    <i class="bx bxs-group bx-border"></i>
+                    <span class="nav-item">Teamwork</span>
+                </a>
+                <span class="tooltip">Teamwork</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="container"
+            style="height:100vh;background-image: url(test7.jpeg);background-size: 100% 100%; background-repeat: no-repeat; background-position: center;">
+
+            <a class="cur-con-weather-card lbar-panel content-module" href="/en/eg/cairo/127164/current-weather/127164">
+                <div class="title-container">
+                    <h2 class="cur-con-weather-card__title" id="title">CURRENT WEATHER</h2>
+                    <p class="cur-con-weather-card__subtitle" id="timestamp">Loading...</p>
+                </div>
+                <div class="cur-con-weather-card__body">
+                    <div class="cur-con-weather-card__panel">
+                        <div class="forecast-container">
+                            <div class="temp-container">
+                                <div class="temp">
+                                    <span id="temperatureValue">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cur-con-weather-card__panel details-container"
+                        style="font-size: 18px; font-weight: bold;">
+                        <div class="spaced-content detail">
+                            <span class="label">Humidity: &nbsp; &nbsp; &nbsp; </span>
+                            <br>
+                            <span class="value" id="humidityValue">Loading...</span>
+                        </div>
+                        <div class="spaced-content detail">
+                            <span class="label">Raindrop: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </span>
+                            <br>
+                            <span class="value" id="raindropValue">Loading...</span>
+                        </div>
+                        <div class="spaced-content detail">
+                            <span class="label">Precipitation: &nbsp;&nbsp;</span>
+                            <br>
+                            <span class="value" id="precipitationValue">Loading...</span><span>%</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <div class="forecast-container-day">
+                <div class="day" id="day1">
+                    <div>Day 1</div> <br>
+                    <div class="temperature">Loading...</div>
+                    <div class="icon"><img src="sun-48190.png" alt="Sunrise Icon"></div>
+                    <div class="description">SUNSET</div>
+                </div>
+                <div class="day" id="day2">
+                    <div>Day 2</div> <br>
+                    <div class="temperature">Loading...</div>
+                    <div class="icon"><img src="download.png" alt="Sunrise Icon"></div>
+                    <div class="description">COOL</div>
+                </div>
+                <div class="day" id="day3">
+                    <div>Day 3</div> <br>
+                    <div class="temperature">Loading...</div>
+                    <div class="icon"><img src="MOSTLY CLOUDY.png" alt="Sunrise Icon"></div>
+                    <div class="description">MOSTLY CLOUDY</div>
+                </div>
+                <div class="day" id="day4">
+                    <div>Day 4</div> <br>
+                    <div class="temperature">Loading...</div>
+                    <div class="icon"><img src="sun-48203.png" alt="Sunrise Icon"></div>
+                    <div class="description">Warm</div>
+                </div>
+                <div class="day" id="day5">
+                    <div>Day 5</div> <br>
+                    <div class="temperature">Loading...</div>
+                    <div class="icon"><img src="Hot sun.png" alt="Sunrise Icon"></div>
+                    <div class="description">Hot</div>
+                </div>
+                <div class="day" id="day6">
+                    <div>Day 6</div> <br>
+                    <div class="temperature">Loading...</div>
+                    <div class="icon"><img src="sun-48194.png" alt="Sunrise Icon"></div>
+                    <div class="description">Scorching</div>
+                </div>
+                <div class="day" id="day7">
+                    <div>Day 7</div> <br>
+                    <div class="temperature">Loading...</div>
+                    <div class="icon"><img src="sun-48190.png" alt="Sunrise Icon"></div>
+                    <div class="description">SUNSET</div>
+                </div>
+            </div>
+        </div>
+
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+            import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyBJ1ktYgQ5h-SHg0r5tvOfELQU8MnKcXps",
+                authDomain: "dhtdata-171c6.firebaseapp.com",
+                databaseURL: "https://dhtdata-171c6-default-rtdb.firebaseio.com",
+                projectId: "dhtdata-171c6",
+                storageBucket: "dhtdata-171c6.appspot.com",
+                messagingSenderId: "780334007542",
+                appId: "1:780334007542:web:80728b9350d9412e2058d7"
+            };
+
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const db = getDatabase();
+
+            // Display current weather data
+            const temperatureElement = document.getElementById('temperatureValue');
+            const timestampElement = document.getElementById('timestamp');
+            const humidityElement = document.getElementById('humidityValue');
+            const raindropElement = document.getElementById('raindropValue');
+            const precipitationElement = document.getElementById('precipitationValue');
+
+            function displayCurrentWeather(temperature, timestamp, humidity, raindrop) {
+                temperatureElement.textContent = temperature;
+                timestampElement.textContent = timestamp;
+                humidityElement.textContent = humidity;
+                raindropElement.textContent = raindrop;
+                precipitationElement.textContent = calculatePrecipitation(raindrop);
+            }
+
+            function calculatePrecipitation(rainDrop) {
+                const precipitation = 100 - (rainDrop * 100) / 1024;
+                return precipitation.toFixed(2);
+            }
+
+            function getAuto() {
+                const dbRef = ref(db, "Weather Data");
+                get(dbRef).then((snapshot) => {
+                    var wrows = [];
+                    snapshot.forEach(childSnapshot => {
+                        wrows.push(childSnapshot.val());
+                    });
+                    // Sort the data based on the "Date" parameter
+                    wrows.sort((a, b) => {
+    // Split the date strings into day, month, and year parts
+    const [dayA, monthA, yearA] = a.Date.split('-').map(Number);
+    const [dayB, monthB, yearB] = b.Date.split('-').map(Number);
+
+    // Create Date objects using the parsed day, month, and year parts
+    const dateA = new Date(yearA, monthA - 1, dayA); // Month is zero-based
+    const dateB = new Date(yearB, monthB - 1, dayB);
+
+    // Compare the Date objects
+    return dateA - dateB;
+});
+
+                    const lastRow = wrows[wrows.length - 1];
+                    displayCurrentWeather(lastRow.Temperature, lastRow.Time, lastRow.Humidity, lastRow.RainDrop);
+                });
+            }
+
+            function updateForecast() {
+                fetch('http://127.0.0.1:5000/forecast?window_size=40')
+                    .then(response => response.json())
+                    .then(data => {
+                        const forecast = data.forecasted_temps;
+                        for (let i = 0; i < forecast.length; i++) {
+                            const dayElement = document.getElementById(`day${i + 1}`);
+                            if (dayElement) {
+                                const temp = forecast[i].toFixed(2);
+                                dayElement.querySelector('.temperature').textContent = `${temp}°`;
+        
+                                let iconSrc = '';
+                                let description = '';
+        
+                                if (temp < 10) {
+                                    iconSrc = 'cold.png';
+                                    description = 'Cold';
+                                } else if (temp < 20) {
+                                    iconSrc = 'MOSTLY CLOUDY.png';
+                                    description = 'Cool';
+                                } else if (temp < 31) {
+                                    iconSrc = 'MOSTLY CLOUDY.png';
+                                    description = 'Warm';
+                                } else if (temp < 35) {
+                                    iconSrc = 'Hot sun.png';
+                                    description = 'Hot';
+                                } else {
+                                    iconSrc = 'scorching.png';
+                                    description = 'Scorching';
+                                }
+        
+                                dayElement.querySelector('.icon img').src = iconSrc;
+                                dayElement.querySelector('.description').textContent = description;
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error fetching forecast:', error));
+            }
+        
+            document.addEventListener('DOMContentLoaded', updateForecast);
+        
+
+            window.onload = function () {
+                getAuto();
+                updateForecast();
+            };
+        </script>
+    </div>
+    <script>
+        let btn = document.querySelector('#btn')
+        let sidebar = document.querySelector('.sidebar')
+
+        btn.onclick = function () {
+            sidebar.classList.toggle('active')
+        };
+    </script>
+</body>
+
+</html>

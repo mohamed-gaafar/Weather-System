@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Monitoring System</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="hs.css">
+</head>
+<body>
+    <div class="sidebar" style="position: fixed; top: 0;">
+        <div class="top">
+            <div class="logo">
+                <i class ="bx bxl-codepen"></i>
+                <span>WRS</span>
+            </div>
+            <i class="bx bx-menu" id="btn"></i>
+        </div> 
+        <div class="user">
+            <img src="cloud.jpg" alt="" class="user-img">
+            <div>
+                <p class="bold">Weather Monitoring</p>
+            </div>
+        </div>
+        <ul>
+            <li>
+                <a href="index.html">
+                    <i class="bx bx-home bx-border"></i>
+                    <span class="nav-item">Home</span>
+                </a>
+                <span class="tooltip">Home</span>
+            </li>
+            <li>
+                <a href="Chart.html">
+                    <i class="bx bx-chart bx-border"></i>
+                    <span class="nav-item">Visualization</span>
+                </a>
+                <span class="tooltip">Visualization</span>
+            </li>
+            <li>
+                <a href="Data.html">
+                    <i class="bx bx-data bx-border"></i>
+                    <span class="nav-item">Historical Data</span>
+                </a>
+                <span class="tooltip">Historical Data</span>
+            </li>
+            <li>
+                <a href="Forecast.html">
+                    <i class="bx bxs-cloud-lightning bx-border"></i>
+                    <span class="nav-item">Forecast</span>
+                </a>
+                <span class="tooltip">Forecast</span>
+            </li>
+            <li>
+                <a href="Teamwork.html">
+                    <i class="bx bxs-group bx-border"></i>
+                    <span class="nav-item">Teamwork</span>
+                </a>
+                <span class="tooltip">Teamwork</span>
+            </li>
+        </ul>
+    </div>
+
+    
+
+    <script>
+        let btn = document.querySelector('#btn')
+        let sidebar = document.querySelector('.sidebar')
+
+        btn.onclick = function (){
+            sidebar.classList.toggle('active')
+        };
+
+        
+    </script>
+</body>
+</html>

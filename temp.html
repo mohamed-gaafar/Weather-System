@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Forecast</title>
+</head>
+<body>
+    <h1>Temperature Forecast</h1>
+    <div id="forecast"></div>
+
+    <script>
+        async function fetchForecast(windowSize) {
+            try {
+                // Replace with the correct URL if the server runs on a different address or port
+                const response = await fetch(`http://127.0.0.1:5000/forecast?window_size=${windowSize}`);
+                const data = await response.json();
+
+                const forecastDiv = document.getElementById('forecast');
+                let html = '<h2>Forecasted Temperatures for the Next 7 Days:</h2>';
+                data.forecasted_temps.forEach((temp, index) => {
+                    html += `<p>Day ${index + 1}: Forecasted Temp: ${temp.toFixed(2)} °C, Actual Temp: ${data.actual_temps[index].toFixed(2)} °C</p>`;
+                });
+
+                forecastDiv.innerHTML = html;
+            } catch (error) {
+                console.error('Error fetching forecast:', error);
+            }
+        }
+
+        // Fetch forecast with the desired window size (e.g., 40)
+        fetchForecast(40);
+    </script>
+</body>
+</html>
